@@ -1,44 +1,34 @@
-Terminal emulator for ASR-33.
+ASR-33 terminal with paper tape reader/punch emulator.
 
 ![screenshot](screenshot.png)
 
 Features:
 
-- Pygame and Tkinter frontends.
+- Refactored and expanded (with the help of AI) version of Hugh Pyle's ttyemy project
 
-- Backends for pty (Linux/Mac) and ssh (Paramiko library)
+- Supports Pygame and Tkinter frontends.
 
-- Limits output to an authentic 10 characters per second. Hit F5 to make it go
-  faster (toggle on tkinter frontend, hold on pygame)
+- Backends for serial and ssh (Paramiko library)
+  Ssh has not been well tested, so use with caution.
 
-- Sound (with the pygame frontend)!  If it's too loud, hit F7 to close the lid.
+- F1/F2 displays/hides the paper tape reader widget (written in Tkinter, but also works with the Pygame frontend)
+- F3/F4 displays/hides the paper tape punch.
 
-- Scrolling (with page up and down - tkinter frontend has a scrollbar)
+- By default, output is limited to an authentic 10 characters per second. Hit F5 to unthrottle
+  the speed.
 
-- Output a form feed to clear everything
+- Hit F6 to mute the sound.
 
-Various bugs and to-dos:
+- Sound is generated using Hugh Pyle's ASR-33 sound recording and Pygame mixer. The sound module Sound now works with both Tkinter and Pygame frontends. If it's too loud, hit F7 to close the lid.
 
-- No user interface to select between frontends and backends. For now, edit the
-  script.
+- Hit F8 to switch between Line and Local modes.
 
-- Speed throttling (whether through the backend or throttle.py) does not work
-  well on Linux. It works on WSL, and the last time I checked this technique
-  worked on macOS. You'll still get the 10-chars-per-second output, but
-  interrupting long outputs won't work.
+- Hit F9 to turn the printer output on and off.
 
-- Most of the fun termios functions (echoprt, echok, kill, reprint, discard)
-  don't work on WSL
+- Scrolling (with page up, down, home, end, mouse scroll - Tkinter frontend has a scrollbar)
 
-- Add tty-37 support (half lines, reverse line feed, and lowercase). For now,
-  the forced uppercase can be disabled by editing the upper() function
+- Copy/paste are supported in the Tkinter frontend, but if have character overprinting, only the last character in the stack will be copied.
 
-- Add backends for wslbridge and msys/cygwin.
+- Tkinter and Pygame frontends can be launched from their modules (primarily for testing) or  use the wrapper module to choose frontend/backend combinations and configurations. Supports yaml and command line parameters.
 
-- Improve graphics, better font, allow "ink spread" for overstruck bold.
-
-- Simulate classical 'stty lcase' line discipline for input of upper/lowercase
-  letters and `` `{|}~`` (part or all of this are broken in modern OSes)
-
-- Discard and regenerate scrollback to limit memory usage. The AbstractLine
-  class I created should be useful for this, but nothing is hooked up.
+- New Teletype33.ttf font that includes lower case letters in the ASR-33 style (useful when not connected to an old computer from back in the day when only upper-case was supported)

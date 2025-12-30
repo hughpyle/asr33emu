@@ -1,0 +1,56 @@
+# ASR-33 Emulator configuration
+
+frontend:
+  type: "tkinter"  # Options: "tkinter", "pygame"
+
+sound:
+  config:
+    lid: "up"  # Options: "up", "down"
+    mute_state: "unmuted"  # Options: "muted", "unmuted"
+
+terminal:
+  config:
+    mode: "line"  # Options: "line", "local"
+    columns: 72
+    rows: 24
+    scrollback: 200
+    autowrap: false  # Enable end of line autowrapping
+    keyboard_uppercase_only: false  # True to convert lowercase to uppercase
+    keyboard_parity_mode: "space"  # Options for setting msb: "mark", "space", "even"
+    send_cr_at_startup: false  # Send carriage return on startup
+    no_print: false  # Options: true, false (disable printing to console)
+
+backend:
+  type: "serial"  # Options: "serial", "ssh"
+  serial_config:
+    port: "COM4"
+    baudrate: 19200
+    databits: 8
+    parity: "N"
+    stopbits: 1
+
+  ssh_config:
+    username: "your_username_here"
+    host: "your_ssh_host_here"
+    port: 22
+#    expected_fingerprint: "SHA256:..."  # Optional, for host key verification
+#    password: "your_password_here"  # Optional, for password authentication (use with caution)
+
+data_throttle:
+  config:
+    mode: "throttled"  # Options: "unthrottled", "throttled"
+    send_rate_cps: 10  # Maximum speed at which characters are sent to backend
+    receive_rate_cps: 10  # Maximum speed at which characters are sent to terminal
+
+tape_reader:
+  config:
+    max_rows: 200  # Maximum number of rows to display in tape reader UI
+    initial_file_path: "."  # Initial path to tape file
+    skip_leading_nulls: true  # Skip past leading nulls when reading
+    auto_stop: true  # Stop reading automatically after first 200 octal or null trailer code
+
+tape_punch:
+  config:
+    max_rows: 200  # Maximum number of rows to display in tape punch UI
+    initial_file_path: "."  # Initial path to tape file
+    mode: "overwrite"  # Options: "append", "overwrite"
