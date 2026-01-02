@@ -17,7 +17,7 @@
 * Hit F9 to turn the printer output on and off.
 * Scrolling (with page up, down, home, end, mouse scroll - Tkinter frontend has a scrollbar)
 * Tkinter and Pygame frontends can be launched from their modules (primarily for testing) or use the wrapper module to choose frontend/backend combinations and configurations. Supports yaml and command line parameters.
-* New Teletype33.ttf font that includes lower case letters in the ASR-33 style (useful when not connected to an old computer from back in the day when only upper-case was supported)
+* New Teletype33.ttf font that includes lower case letters in the ASR-33 style (useful when connected to modern-day computers)
 
 ***
 
