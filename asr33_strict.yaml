@@ -15,8 +15,8 @@ terminal:
     rows: 24
     scrollback: 200
     autowrap: false  # Enable end of line autowrapping
-    keyboard_uppercase_only: false  # True to convert lowercase to uppercase
-    keyboard_parity_mode: "space"  # Options: "mark" | "space" | "even"
+    keyboard_uppercase_only: true  # True to convert lowercase to uppercase
+    keyboard_parity_mode: "mark"  # Options: "mark" | "space" | "even"
     send_cr_at_startup: false  # Send carriage return on startup
     no_print: false  # Options: true | false (disable printing to console)
 
@@ -25,7 +25,7 @@ backend:
 
   serial_config:
     port: "COM4"  # e.g., "COM1" on Windows or "/dev/ttyUSB0" on Linux
-    baudrate: 19200
+    baudrate: 110
     databits: 8  # 5 | 6 | 7 | 8
     parity: "N"  # "N" | "E" | "O" | "M" | "S"
     stopbits: 1  # 1 | 2

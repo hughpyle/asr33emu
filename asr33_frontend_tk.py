@@ -240,7 +240,7 @@ class ASR33TkFrontend:
             self.create_status_bar(
                 parent_frame=self.status_area,
                 status_text=f"Data Rate: {self._data_rate.capitalize()}",
-                status_text_width=15,
+                status_text_width=21,
                 button_text="Unthrottle" if self._data_rate == "throttled" else "Throttle",
                 button_command=self._throttle_button_command,
             )
@@ -262,7 +262,7 @@ class ASR33TkFrontend:
             self.create_status_bar(
                 parent_frame=self.status_area,
                 status_text=f"Lid: {self._lid_state.capitalize()}",
-                status_text_width=12,
+                status_text_width=10,
                 button_text="Lower Lid" if self._lid_state == "up" else "Raise Lid",
                 button_command=self._lid_button_command,
             )
@@ -273,7 +273,7 @@ class ASR33TkFrontend:
             self.create_status_bar(
                 parent_frame=self.status_area,
                 status_text=f"Comm Status: {self._loopback_state.capitalize()}",
-                status_text_width=15,
+                status_text_width=20,
                 button_text="Local" if self._loopback_state == "line" else "Line",
                 button_command=self._loopback_button_command,
             )
@@ -899,14 +899,6 @@ class ASR33TkFrontend:
         self.papertape_punch.punch_bytes(data)
         self.display_update_needed = True
 
-    def check_focus(self):
-        """Ensure the main window has focus."""
-        if self.root is None:
-            return
-        w = self.root.focus_get()
-        print("Focus is on:", w)
-        self.root.after(1000, self.check_focus)
-
     def run(self):
         """Run the Tkinter main loop."""
 
@@ -924,8 +916,8 @@ class ASR33TkFrontend:
             self._sounds.start()
 
         if self.root is not None:
-            self.root.focus_force()
             self.root.after(20, self._periodic_tasks)
+            self.root.focus_set()
             self.root.mainloop()
 
         # Cleanup on exit
