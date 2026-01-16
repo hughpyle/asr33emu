@@ -1,0 +1,20 @@
+# ASR-33 Teletype Emulator Dependencies
+# Tested with Python 3.10+
+
+# Configuration file parsing
+PyYAML>=6.0.3
+
+# Serial communication backend
+pyserial>=3.5
+
+# SSH communication backend
+paramiko>=4.0.0
+
+# Pygame frontend and audio support
+pygame>=2.6.1
+
+# Image processing for paper tape visualization
+pillow>=10.0.0
+
+# Font handling for custom teletype font
+fonttools>=4.38.0
