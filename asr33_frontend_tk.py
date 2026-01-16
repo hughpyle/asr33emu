@@ -52,7 +52,8 @@ TEXT_COLOR = "#555555"
 PAPER_COLOR = "#ffeedd"
 
 # Default font settings
-DEFAULT_FONT_PATH = "Teletype33.ttf"
+# Use path relative to this script, not cwd
+DEFAULT_FONT_PATH = os.path.join(os.path.dirname(__file__), "Teletype33.ttf")
 DEFAULT_FONT_SIZE = 20
 
 # Cross-platform font registration
@@ -75,8 +76,20 @@ def register_font(ttf_path: str) -> bool:
                 PermissionError, subprocess.CalledProcessError) as e:
             print("Font registration failed:", e)
             return False
+    elif sys.platform == "darwin":
+        # macOS: copy font to user's Fonts directory
+        fonts_dir = pathlib.Path.home() / "Library" / "Fonts"
+        fonts_dir.mkdir(parents=True, exist_ok=True)
+        dest = fonts_dir / os.path.basename(ttf_path)
+        try:
+            if not dest.exists():
+                shutil.copy(ttf_path, dest)
+            return True
+        except (FileNotFoundError, shutil.SameFileError, PermissionError) as e:
+            print("Font registration failed:", e)
+            return False
     else:
-        print("Unsupported platform")
+        print("Unsupported platform:", sys.platform)
         return False
 
 
@@ -145,24 +158,28 @@ class ASR33TkFrontend:
             "font_size",
             default=DEFAULT_FONT_SIZE)
 
-        # Register font before creating Tk root
-        family_name = get_ttf_family_name(self.font_path)
-        if family_name:
-            if register_font(self.font_path):
-                pass
-#                print("Registered font family:", family_name)
-            else:
-                print("Warning: Unable to register font: ", family_name)
-                family_name = ""
-        else:
-            print("Warning: font not found:", self.font_path)
-
+        # Create Tk root first so we can check available fonts
         self.root = tk.Tk()
         self.root.resizable(False, False)
         self.root.title(f"ASR-33 Emulator using {self._backend.get_info_string()}")
         self.display_update_needed = False
 
+        # Get font family name from TTF file
+        family_name = get_ttf_family_name(self.font_path)
+
+        # Check if font is already available in Tkinter
+        if family_name and family_name not in tkfont.families():
+            # Font not available - try to register it
+            if not register_font(self.font_path):
+                print(f"Warning: Unable to register font: {family_name}")
+                family_name = None
+            else:
+                # Font was just installed - need to update Tk's font list
+                self.root.tk.call('font', 'families')
+
         if not family_name:
+            if self.font_path and self.font_path != DEFAULT_FONT_PATH:
+                print(f"Warning: font not found: {self.font_path}")
             family_name = "Courier"  # fallback font
             print("Using fallback font:", family_name)
 

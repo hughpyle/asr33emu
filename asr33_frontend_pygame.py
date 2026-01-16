@@ -13,6 +13,7 @@ ASR-33 Frontend using Pygame.
 """
 
 import contextlib
+import os
 import sys
 import io
 import subprocess
@@ -64,7 +65,8 @@ BG_COLOR = (0xff, 0xee, 0xdd)
 TEXT_COLOR = (0x33, 0x33, 0x33)
 
 # Default font settings
-DEFAULT_FONT_PATH = "Teletype33.ttf"
+# Use path relative to this script, not cwd
+DEFAULT_FONT_PATH = os.path.join(os.path.dirname(__file__), "Teletype33.ttf")
 DEFAULT_FONT_SIZE = 20
 
 
