@@ -261,6 +261,29 @@ class TestPortNoneLocalMode(unittest.TestCase):
                 self.assertIsNone(error)
             os.unlink(f.name)
 
+    def test_port_pty_sets_backend_type(self):
+        """Test --port pty sets backend type to pty."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+            f.write("backend:\n  type: serial\n")
+            f.flush()
+            with mock.patch("sys.argv", ["prog", "--config", f.name, "--port", "pty"]):
+                config = ASR33Config()
+                backend_type = config.get_key("backend", "type")
+                self.assertEqual(backend_type, "pty")
+            os.unlink(f.name)
+
+    def test_port_pty_skips_validation(self):
+        """Test --port pty skips serial port validation."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+            f.write("backend:\n  type: serial\n  serial_config:\n    port: null\n")
+            f.flush()
+            with mock.patch("sys.argv", ["prog", "--config", f.name, "--port", "pty"]):
+                config = ASR33Config()
+                is_valid, error = config.validate_serial_port()
+                self.assertTrue(is_valid)
+                self.assertIsNone(error)
+            os.unlink(f.name)
+
 
 class TestASR33ConfigValidation(unittest.TestCase):
     """Tests for port validation."""

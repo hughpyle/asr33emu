@@ -15,6 +15,7 @@ import sys
 from asr33_config import ASR33Config
 from asr33_backend_serial import SerialBackend
 from asr33_backend_ssh import SSHV2Backend
+from asr33_backend_pty import PtyBackend
 from asr33_shim_throttle import DataThrottle
 from asr33_terminal import Terminal
 from asr33_sounds_sm import ASR33AudioModule as ASR33_Sounds
@@ -92,6 +93,10 @@ class EmulatorWrapper:
                 self.comm_backend = SSHV2Backend(
                     upper_layer=None,
                     config=cfg
+                )
+            elif backend_type == "pty":
+                self.comm_backend = PtyBackend(
+                    upper_layer=None
                 )
             else:
                 raise ValueError(f"Unsupported backend type: {backend_type}")

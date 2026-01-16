@@ -283,7 +283,8 @@ Examples:
   %(prog)s --list-ports
   %(prog)s --port /dev/cu.usbserial-A50285BI
   %(prog)s --port COM3 --baud 110 --save
-  %(prog)s --port none                        # local loopback mode
+  %(prog)s --port pty                         # local shell (Unix/macOS)
+  %(prog)s --port none                        # local loopback
   %(prog)s --backend ssh --config my_config.yaml
 """
         )
@@ -305,7 +306,7 @@ Examples:
         )
         parser.add_argument(
             "--port", "-p", type=str, metavar="DEVICE",
-            help="Serial port device (e.g., COM3, /dev/ttyUSB0), or 'none' for local loopback"
+            help="Serial port (e.g., COM3, /dev/ttyUSB0), 'pty' for local shell (Unix/macOS only), or 'none' for loopback"
         )
 
         # Frontend/backend selection
@@ -392,11 +393,14 @@ Examples:
         """Merge command-line arguments over config file settings."""
         merged = deep_merge({}, config)
 
-        # Handle --port none as shortcut for local loopback mode
+        # Handle special --port values
         port_arg = getattr(self.args, "port", None)
         if port_arg and port_arg.lower() == "none":
+            # Local loopback mode - no backend needed
             self._set_nested(merged, ["terminal", "config", "mode"], "local")
-            # Don't set the port - local mode doesn't use it
+        elif port_arg and port_arg.lower() in ("pty", "shell"):
+            # PTY mode - spawn a shell
+            self._set_nested(merged, ["backend", "type"], "pty")
         elif port_arg:
             self._set_nested(merged, ["backend", "serial_config", "port"], port_arg)
 
@@ -486,9 +490,9 @@ Examples:
         Returns:
             (is_valid, error_message)
         """
-        # Skip validation for non-serial backends
+        # Skip validation for non-serial backends (ssh, pty)
         backend_type = self._merged_config.get("backend", {}).get("type", "serial")
-        if backend_type != "serial":
+        if backend_type in ("ssh", "pty"):
             return True, None
 
         # Skip validation for local loopback mode
@@ -535,8 +539,13 @@ Examples:
         else:
             print("No serial ports found.", file=sys.stderr)
 
+        if sys.platform != "win32":
+            print(file=sys.stderr)
+            print("To start with a local shell (PTY, Unix/macOS only):", file=sys.stderr)
+            print(f"  {prog} --port pty", file=sys.stderr)
+
         print(file=sys.stderr)
-        print("To start in local loopback mode (no serial port):", file=sys.stderr)
+        print("To start in local loopback mode (no connection):", file=sys.stderr)
         print(f"  {prog} --port none", file=sys.stderr)
 
         print(file=sys.stderr)
