@@ -634,6 +634,9 @@ class ASR33TkFrontend:
 
     def _keypress(self, event):
         ch = event.char
+        # Handle special keys where event.char is empty
+        if not ch and event.keysym == "Return":
+            ch = '\r'
         if ch:
             if self.keyboard_uppercase_only:
                 ch = ch.upper()

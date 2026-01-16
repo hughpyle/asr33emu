@@ -113,11 +113,16 @@ class DataThrottle:
         self.upper_layer.receive_data(data)
 
     def _send_loopback_to_upper_layer(self, data: bytes):
-        """Sends data directly to upper layer in loopback mode."""
+        """Sends data directly to upper layer in loopback mode.
+
+        Translates CR to CR+LF so pressing Return creates a new line.
+        """
         if not self._loopback_enabled:
             return
         if self.upper_layer is None or not hasattr(self.upper_layer, 'receive_data'):
             return
+        # Translate CR to CR+LF for proper newline behavior in loopback
+        data = data.replace(b'\r', b'\r\n')
         self.upper_layer.receive_data(data)
 
     def _throttle_tx_worker(self):
